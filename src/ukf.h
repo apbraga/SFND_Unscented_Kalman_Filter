@@ -4,6 +4,9 @@
 #include "Eigen/Dense"
 #include "measurement_package.h"
 
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
+
 class UKF {
  public:
   /**
@@ -15,6 +18,11 @@ class UKF {
    * Destructor
    */
   virtual ~UKF();
+
+  /**
+   *  Angle normalization to [-Pi, Pi]
+   */
+  void NormAng(double *ang);
 
   /**
    * ProcessMeasurement
@@ -40,6 +48,13 @@ class UKF {
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+    /**
+   * Updates the state and the state covariance matrix of the UKF
+   * 
+   */
+  void UpdateUKF(MeasurementPackage meas_package, MatrixXd Zsig, int n_z);
+
 
 
   // initially set to false, set to true in first call of ProcessMeasurement
@@ -89,12 +104,21 @@ class UKF {
 
   // State dimension
   int n_x_;
+  
+  // Number of sigma points
+  int n_sig_;
 
   // Augmented state dimension
   int n_aug_;
 
   // Sigma point spreading parameter
   double lambda_;
+
+  // Radar measurement noise covariance matrix
+  MatrixXd R_radar_;
+  
+  // Lidar measurement noise covariance matrix
+  MatrixXd R_lidar_;
 };
 
 #endif  // UKF_H
